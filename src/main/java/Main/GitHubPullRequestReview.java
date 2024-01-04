@@ -16,13 +16,13 @@ public class GitHubPullRequestReview {
     
     public static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
     public static final String GITHUB_API_URL = "https://api.github.com";
-    public static final String ACCESS_TOKEN = "";
+    public static final String ACCESS_TOKEN = "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";
     public static final String OWNER = "Ksandeepgenpact1";
     public static final String REPO = "eclipse-plugin";
     public static final int PULL_NUMBER = 1; 
 
     public static void main(String[] args) {
-        String reviewBody = "This is my review comment.";
+        String reviewBody = "Wait till auto reviewer starts working";
         String event = "COMMENT"; // Event type: COMMENT, APPROVE, REQUEST_CHANGES, DISMISS
 
         createPullRequestReview(reviewBody, event);
