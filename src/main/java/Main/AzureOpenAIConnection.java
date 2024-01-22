@@ -25,7 +25,7 @@ import com.google.gson.JsonObject;
 public class AzureOpenAIConnection {
     public String azureOpenAIConnection(String diff_patches) {
         String endpointUrl = "https://sdlcopenai.openai.azure.com/openai/deployments/GEN_AI_SDLC_Model/chat/completions?api-version=2023-05-15";        
-        String apiKey = " ";
+        String apiKey = "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";
         String codeReview="";
 
         try {
