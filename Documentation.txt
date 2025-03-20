@@ -55,3 +55,107 @@ The implementation of this feature can be achieved through the following steps:
 
 By implementing this feature, the application can provide a more reliable image handling experience for users while minimizing disruptions caused by recent library updates.
 ---
+-(2025-03-20 10:22:15)
+# Feature Documentation for the Transaction Class
+
+## Purpose of the Feature
+The `Transaction` class is designed to facilitate and manage financial transactions between accounts. It supports three types of transactions: deposits, withdrawals, and transfers. The class handles the creation, processing, and display of transaction details, ensuring that transactions are executed according to the rules of account management, such as checking for sufficient balance and updating transaction statuses.
+
+## Description
+The `Transaction` class encapsulates all necessary information and functionalities associated with a financial transaction. It maintains details about the sender and receiver accounts, the amount involved, the type of transaction, its current status, and the date the transaction occurred. The class provides constructors for creating deposit/withdrawal and transfer transactions, as well as methods for processing these transactions and displaying their details.
+
+### Key Functional Changes
+1. **Constructors**:
+   - Supports two types of constructors:
+     - One for deposits and withdrawals, requiring sender account, amount, and transaction type.
+     - Another for transfers, which additionally requires a receiver account.
+  
+2. **Transaction Types**:
+   - Defines transaction types as strings: "deposit", "withdrawal", and "transfer".
+  
+3. **Transaction Status**:
+   - Maintains transaction status, which can be "pending", "completed", or "failed", indicating the transaction’s current state.
+
+4. **Processing Logic**:
+   - Implements the `processTransaction()` method that incorporates business logic for handling each transaction type:
+     - **Deposit**: Adds the amount to the sender's account and marks the transaction as completed.
+     - **Withdrawal**: Checks if the sender's account has sufficient funds before processing the withdrawal; marks the transaction as failed if funds are insufficient.
+     - **Transfer**: Similar to withdrawal but also deposits the withdrawn amount into the receiver’s account. It also ensures that the sender has enough funds.
+
+5. **Transaction Details Display**:
+   - Provides a method `displayTransactionDetails()` to print out the transaction details, such as date, type, status, amount, and involved accounts.
+
+### Implementation
+The implementation of the `Transaction` class is structured as follows:
+
+```java
+public class Transaction {
+    private Account senderAccount;
+    private Account receiverAccount;
+    private double amount;
+    private String transactionType; // "deposit", "withdrawal", "transfer"
+    private String transactionStatus; // "pending", "completed", "failed"
+    private String transactionDate;
+
+    // Constructor for a deposit or withdrawal
+    public Transaction(Account senderAccount, double amount, String transactionType) {
+        this.senderAccount = senderAccount;
+        this.amount = amount;
+        this.transactionType = transactionType;
+        this.transactionStatus = "pending";
+        this.transactionDate = java.time.LocalDate.now().toString(); // Current date
+    }
+
+    // Constructor for a transfer
+    public Transaction(Account senderAccount, Account receiverAccount, double amount, String transactionType) {
+        this(senderAccount, amount, transactionType);
+        this.receiverAccount = receiverAccount;
+    }
+
+    // Getter and Setter methods omitted for brevity...
+
+    // Method to process the transaction
+    public void processTransaction() {
+        if (transactionType.equalsIgnoreCase("deposit")) {
+            senderAccount.deposit(amount);
+            transactionStatus = "completed";
+        } else if (transactionType.equalsIgnoreCase("withdrawal")) {
+            if (senderAccount.getBalance() >= amount) {
+                senderAccount.withdraw(amount);
+                transactionStatus = "completed";
+            } else {
+                transactionStatus = "failed";
+                System.out.println("Insufficient balance for withdrawal.");
+            }
+        } else if (transactionType.equalsIgnoreCase("transfer")) {
+            if (senderAccount.getBalance() >= amount) {
+                senderAccount.withdraw(amount);
+                receiverAccount.deposit(amount);
+                transactionStatus = "completed";
+            } else {
+                transactionStatus = "failed";
+                System.out.println("Insufficient balance for transfer.");
+            }
+        } else {
+            transactionStatus = "failed";
+            System.out.println("Invalid transaction type.");
+        }
+    }
+
+    // Method to display transaction details
+    public void displayTransactionDetails() {
+        System.out.println("Transaction Date: " + transactionDate);
+        System.out.println("Transaction Type: " + transactionType);
+        System.out.println("Transaction Status: " + transactionStatus);
+        System.out.println("Amount: $" + amount);
+        System.out.println("Sender Account: " + senderAccount.getAccountNumber());
+        if (receiverAccount != null) {
+            System.out.println("Receiver Account: " + receiverAccount.getAccountNumber());
+        }
+    }
+}
+```
+
+### Summary
+The `Transaction` class enhances the financial management system by providing a structured way to create and manage transactions. Its clear separation of different transaction types, robust processing logic, and detailed display capabilities make it an essential component for handling financial operations effectively.
+---
