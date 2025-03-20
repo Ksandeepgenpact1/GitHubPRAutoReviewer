@@ -354,3 +354,82 @@ public class Transaction {
 ### Summary
 The `Transaction` class enhances account management by providing a robust and flexible way to handle different financial transactions, ensuring that each transaction is recorded with its status and relevant details. This feature contributes significantly to the overall functionality of the financial application, making it easier for users to manage their accounts effectively.
 ---
+-(2025-03-20 14:10:41)
+# Feature Documentation: Transaction Management System
+
+## Purpose
+The `Transaction` class is designed to model financial transactions between accounts, providing a structured way to handle deposits, withdrawals, and transfers. It allows for the recording of transaction details, the processing of transactions, and the display of transaction information.
+
+## Description
+The `Transaction` class encapsulates the details of a financial transaction, including the sender and receiver accounts, the transaction amount, type, status, and date. It supports three types of transactions: deposits, withdrawals, and transfers. The class provides methods to process these transactions and to retrieve transaction details.
+
+### Key Functional Changes:
+1. **Transaction Types Support**: 
+   - The class supports three types of transactions: deposits, withdrawals, and transfers, allowing for a versatile management of account activities.
+
+2. **Transaction Status Handling**:
+   - Each transaction can have a status of "pending", "completed", or "failed", providing clear feedback on the outcome of the transaction processing.
+
+3. **Dynamic Processing**:
+   - The `processTransaction` method implements logic to handle different transaction types and ensures that transactions are only completed if the sender has sufficient funds.
+
+4. **Transaction Date Logging**:
+   - The transaction date is automatically set to the current date upon creation, providing a timestamp for all transactions.
+
+5. **Detailed Transaction Reporting**:
+   - The `displayTransactionDetails` method provides a complete overview of the transaction, including date, type, status, amount, sender, and receiver account numbers, enhancing transparency.
+
+## Implementation
+The `Transaction` class is implemented with the following main components:
+
+### Attributes:
+- **senderAccount**: The account from which the funds are drawn.
+- **receiverAccount**: The account to which the funds are sent (for transfers).
+- **amount**: The monetary value of the transaction.
+- **transactionType**: The type of the transaction (deposit, withdrawal, transfer).
+- **transactionStatus**: The current status of the transaction (pending, completed, failed).
+- **transactionDate**: The date the transaction was created.
+
+### Constructors:
+- **Deposit/Withdrawal Constructor**: 
+  ```java
+  public Transaction(Account senderAccount, double amount, String transactionType)
+  ```
+  Initializes a transaction for deposits or withdrawals with the specified sender account, amount, and transaction type.
+
+- **Transfer Constructor**:
+  ```java
+  public Transaction(Account senderAccount, Account receiverAccount, double amount, String transactionType)
+  ```
+  Initializes a transaction for transfers, using both sender and receiver accounts.
+
+### Methods:
+- **Getter and Setter Methods**: For accessing and modifying transaction attributes.
+  
+- **processTransaction Method**:
+  ```java
+  public void processTransaction()
+  ```
+  - Validates the transaction type.
+  - Executes the transaction based on type while checking for sufficient funds.
+  - Updates the transaction status based on the outcome.
+
+- **displayTransactionDetails Method**:
+  ```java
+  public void displayTransactionDetails()
+  ```
+  - Outputs the transaction details, including date, type, status, amount, sender, and receiver account numbers.
+
+### Example Usage:
+```java
+Account sender = new Account("123456789", 1000.0);
+Account receiver = new Account("987654321", 500.0);
+
+// Creating a transfer transaction
+Transaction transfer = new Transaction(sender, receiver, 200.0, "transfer");
+transfer.processTransaction(); // Processes the transfer
+transfer.displayTransactionDetails(); // Displays transaction details
+```
+
+This implementation allows for a comprehensive transaction management system that can be easily extended and integrated into larger financial applications.
+---
