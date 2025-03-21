@@ -433,3 +433,64 @@ transfer.displayTransactionDetails(); // Displays transaction details
 
 This implementation allows for a comprehensive transaction management system that can be easily extended and integrated into larger financial applications.
 ---
+-(2025-03-21 17:20:26)
+# Feature Documentation: Transaction Management System
+
+## Purpose
+The `Transaction` class implements a transaction management system for handling various types of financial transactions such as deposits, withdrawals, and transfers between accounts. It tracks the status and details of each transaction, providing an organized way to manage financial operations within an application.
+
+## Description
+This feature introduces a class that encapsulates the properties and behaviors associated with different types of financial transactions. The `Transaction` class supports the following functionalities:
+
+- **Transaction Types**: Supports three transaction types: deposit, withdrawal, and transfer.
+- **Transaction Status**: Maintains the status of each transaction, which can be "pending", "completed", or "failed".
+- **Transaction Processing**: Provides methods to process the transaction based on its type and update the status accordingly.
+- **Transaction Details Display**: Offers a method to display transaction details including date, type, status, amount, and involved accounts.
+
+## Implementation
+The `Transaction` class is defined with the following key components:
+
+### Properties
+- `private Account senderAccount`: Represents the account from which the funds are drawn.
+- `private Account receiverAccount`: Represents the account to which the funds are sent (relevant for transfers).
+- `private double amount`: The amount of money involved in the transaction.
+- `private String transactionType`: Defines the type of transaction (e.g., "deposit", "withdrawal", "transfer").
+- `private String transactionStatus`: Indicates the current status of the transaction (e.g., "pending", "completed", "failed").
+- `private String transactionDate`: Records the date when the transaction is created.
+
+### Constructors
+1. **Deposit or Withdrawal Constructor**:
+   ```java
+   public Transaction(Account senderAccount, double amount, String transactionType)
+   ```
+   Initializes a transaction for either a deposit or withdrawal, setting the transaction status to "pending" and recording the current date.
+
+2. **Transfer Constructor**:
+   ```java
+   public Transaction(Account senderAccount, Account receiverAccount, double amount, String transactionType)
+   ```
+   Initializes a transaction specifically for transfers, using the deposit/withdrawal constructor and additionally setting the receiver account.
+
+### Getter and Setter Methods
+The class provides getters and setters for each property to allow access and modification of transaction attributes.
+
+### Transaction Processing Method
+```java
+public void processTransaction()
+```
+- **Description**: Processes the transaction based on its type. 
+- **Logic**:
+  - For a deposit, it adds the amount to the sender account and updates the status to "completed".
+  - For a withdrawal, it checks if the sender's balance is sufficient, performs the withdrawal if possible, and updates the status.
+  - For a transfer, it verifies the balance in the sender account, performs the withdrawal, deposits into the receiver account, and updates the status.
+  - If the balance is insufficient or an invalid transaction type is provided, the transaction status is updated to "failed" with an appropriate message.
+
+### Transaction Details Display Method
+```java
+public void displayTransactionDetails()
+```
+- **Description**: Outputs the details of the transaction including the date, type, status, amount, sender account number, and receiver account number (if applicable).
+
+## Conclusion
+The `Transaction` class centralizes the management of financial transactions, ensuring a clear structure for processing and monitoring the status of each transaction type. This feature enhances the functionality of the application by allowing users to perform and track financial operations efficiently.
+---
