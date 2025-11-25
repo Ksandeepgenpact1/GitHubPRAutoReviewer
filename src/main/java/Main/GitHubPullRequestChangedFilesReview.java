@@ -8,25 +8,35 @@ import okhttp3.Response;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.io.BufferedReader;
+import java.io.DataOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.nio.charset.StandardCharsets;
+import java.util.Base64;
 
 public class GitHubPullRequestChangedFilesReview {
 
 	public static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
 	public static final String GITHUB_API_URL = "https://api.github.com";
-	public static final String ACCESS_TOKEN = "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";
+	public static final String ACCESS_TOKEN = " ";//provide access token
 	public static final String OWNER = "Ksandeepgenpact1";
 	public static final String REPO = "eclipse-plugin";
 	public static final int PULL_NUMBER = 2; // Replace with the actual pull request number
 
 	public static void main(String[] args) {
 			boolean mergeable=checkPullRequestMergeability();
-			if(mergeable) {
-			fetchDiffPatchesFromPullRequest();
+			if(mergeable) {			
 			reviewPullRequest();
 			}
 	}
@@ -35,21 +45,11 @@ public class GitHubPullRequestChangedFilesReview {
 		// Step 1: List pull request files
 		JSONArray files = listPullRequestFiles();
 	}
-		// Step 2: Review each file individually
-//		for (int i = 0; i < files.length(); i++) {
-//			JSONObject file = files.getJSONObject(i);
-//			String filename = file.getString("filename");
-//			System.out.println(filename);
-			//String comment = "This is a test comment for file: " + filename;
-	        //addCommentToChangedFile(filename, comment);
-//			int additions = file.getInt("additions");
-//			int deletions = file.getInt("deletions");
-//			// Add logic to review the file, examine changes, lines, or sections
-//
-//			// Step 3: Add review comments
-//			addReviewComment(filename, additions, deletions);
-		
-	public static void fetchDiffPatchesFromPullRequest() {
+			
+	    
+	     
+	     // Fetching the Difference Patches From changed Commit Files.
+	public static String fetchDiffPatchesFromPullRequest() {
         String url = GITHUB_API_URL + "/repos/" + OWNER + "/" + REPO + "/pulls/" + PULL_NUMBER + "/files";        
         String accessToken = ACCESS_TOKEN;
 
@@ -59,7 +59,7 @@ public class GitHubPullRequestChangedFilesReview {
                 .header("Authorization", "Bearer " + accessToken)
                 .header("Accept", "application/vnd.github.v3+json")
                 .build();
-
+        String codeReview="";
         try (Response response = client.newCall(request).execute()) {
             int statusCode = response.code();
             String responseBody = response.body().string();
@@ -77,13 +77,19 @@ public class GitHubPullRequestChangedFilesReview {
                     System.out.println("Diff Patch:");
                     System.out.println(diffPatch);
                     System.out.println("---------------");
+                    
+                    // raising request to the llm Model.
+                    AzureOpenAIConnection llmModel= new AzureOpenAIConnection();
+                    codeReview=llmModel.azureOpenAIConnection(diffPatch);
+                    return codeReview;
                 }
             } else {
                 System.out.println("Failed to fetch pull request files");
             }
         } catch (IOException e) {
-            e.printStackTrace();
-        }
+            e.printStackTrace();            
+        }		
+        return codeReview;
     }
 
     public static class PullRequestFile {
@@ -99,6 +105,8 @@ public class GitHubPullRequestChangedFilesReview {
         }
     }
 	
+    
+    // Adding Comments to the changed commit files.
 	public static void addCommentToChangedFile(String filename, String comment,String commitId) {
         String url = GITHUB_API_URL + "/repos/" + OWNER + "/" + REPO + "/pulls/" + PULL_NUMBER + "/comments";
         OkHttpClient client = new OkHttpClient();
@@ -209,20 +217,30 @@ public class GitHubPullRequestChangedFilesReview {
 	public static JSONArray listPullRequestFiles() {
 		JSONArray commits = listPullRequestCommits();
 		JSONArray files = new JSONArray();
+		AzureOpenAIConnection llmModel= new AzureOpenAIConnection();
+		String codeReview="";
 
 		for (int i = 0; i < commits.length(); i++) {
 			JSONObject commit = commits.getJSONObject(i);
 			String commitId = commit.getString("sha");
 			System.out.println(commitId);
 			JSONArray commitFiles = listCommitFiles(commitId);
+		
+			
 			files.putAll(commitFiles);
 			//Trying comment addition to changed files
 			for (int j = 0; j < files.length(); j++) {
-				JSONObject file = files.getJSONObject(j);
+				JSONObject file = files.getJSONObject(j);				 				        
 				String filename = file.getString("filename");
-				System.out.println(filename);
-				String comment = "This is a test comment for file at position 1 trail 2: " + filename;
-		        addCommentToChangedFile(filename, comment,commitId);
+				System.out.println(filename);			
+				String diffPatch = file.get("patch").toString();
+				System.out.println(diffPatch);
+				// raising request to the llm Model.                
+                codeReview=llmModel.azureOpenAIConnection(diffPatch);			
+                
+				//String comment = "This is a test comment for file at position 1 trail 2: " + filename;
+				
+		        addCommentToChangedFile(filename, codeReview,commitId);
 		}
 		}
 		return files;
